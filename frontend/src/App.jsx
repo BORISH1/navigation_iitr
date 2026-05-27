@@ -48,7 +48,8 @@ function App() {
   useEffect(() => {
     const loadMapData = async () => {
       try {
-        const response = await fetch('/api/map');
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const response = await fetch(`${apiUrl}/api/map`);
         const data = await response.json();
         
         if (data.nodes && data.nodes.length > 0) {
@@ -74,7 +75,8 @@ function App() {
   const saveMapToDatabase = async () => {
     setIsSaving(true);
     try {
-      const response = await fetch('/api/map', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/map`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nodes, edges })

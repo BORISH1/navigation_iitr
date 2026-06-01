@@ -521,11 +521,18 @@ function App() {
     const activeNodes = nodes.filter(n => (n.floor || 0) === currentFloor);
     activeNodes.forEach(n => {
       ctx.beginPath();
+      
+      const isStair = getConnectedFloors(n.id, nodes, edges).length > 0;
+      
       let radius = n.name ? 10 : 8;
+      if (isStair) radius = 12;
+
       ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
 
       let fillStyle = '#3B82F6'; 
       if (n.name) fillStyle = '#10B981'; 
+      if (isStair) fillStyle = '#F97316';
+      
       if (mode === 'admin' && lastNodeId && lastNodeId !== n.id) fillStyle = '#8B5CF6'; 
       if (n.id === startNodeId || n.id === destNodeId) fillStyle = '#F59E0B'; 
       if (n.id === selectedNodeId) fillStyle = '#EF4444'; 
@@ -717,6 +724,7 @@ function App() {
     } else if (mode === 'user') {
       if (hoverNodeId) {
         const connectedFloors = getConnectedFloors(hoverNodeId, nodes, edges);
+        
         if (connectedFloors.length > 0 && shortestPath.length > 0) {
           const pathIdx = shortestPath.indexOf(hoverNodeId);
           if (pathIdx !== -1 && pathIdx + 1 < shortestPath.length) {
@@ -728,6 +736,13 @@ function App() {
             }
           }
         }
+
+        if (connectedFloors.length === 1 && shortestPath.length === 0) {
+          setCurrentFloor(connectedFloors[0]);
+          setInfoNodeId(null);
+          return;
+        }
+
         setInfoNodeId(hoverNodeId);
       } else {
         setInfoNodeId(null);
